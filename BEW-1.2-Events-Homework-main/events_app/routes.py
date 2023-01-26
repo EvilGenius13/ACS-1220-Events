@@ -17,11 +17,12 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def index():
     """Show upcoming events to users!"""
-    # events = Event.query.all()
-    # print(events)
     # TODO: Get all events and send to the template
     
-    return render_template('index.html')
+    events = Event.query.all()
+    print(events)
+    
+    return render_template('index.html', events = events)
 
 
 @main.route('/create', methods=['GET', 'POST'])
@@ -44,6 +45,10 @@ def create():
         # TODO: Create a new event with the given title, description, & 
         # datetime, then add and commit to the database
 
+        new_event = Event(title=new_event_title, description=new_event_description, date_and_time=date_and_time)
+        db.session.add(new_event)
+        db.session.commit()
+
         flash('Event created.')
         return redirect(url_for('main.index'))
     else:
@@ -56,7 +61,10 @@ def event_detail(event_id):
 
     # TODO: Get the event with the given id and send to the template
     
-    return render_template('event_detail.html')
+    event = Event.query.get(event_id)
+    print(event)
+
+    return render_template('event_detail.html', event = event)
 
 
 @main.route('/event/<event_id>', methods=['POST'])
